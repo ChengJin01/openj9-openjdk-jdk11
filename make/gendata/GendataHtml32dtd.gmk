@@ -23,6 +23,24 @@
 # questions.
 #
 
+# ===========================================================================
+# (c) Copyright IBM Corp. 2019, 2019 All Rights Reserved
+# ===========================================================================
+
+LIB_AWT_EXISTS := true
+ifeq ($(OPENJDK_TARGET_OS), linux)
+	LIB_AWT := $(BOOT_JDK)/lib/libawt.so
+
+	ifeq ($(OPENJDK_TARGET_CPU), riscv64)
+		ifeq (,$(wildcard $(LIB_AWT)))
+			LIB_AWT_EXISTS := false
+		endif
+	endif
+endif
+
+# avoid using lib/libawt.so in the boot JDK on RISC-V
+# as it is not generated via the cross-toolchain.
+ifeq ($(LIB_AWT_EXISTS), true)
 GENDATA_HTML32DTD :=
 
 HTML32DTD = $(JDK_OUTPUTDIR)/modules/java.desktop/javax/swing/text/html/parser/html32.bdtd
@@ -30,6 +48,8 @@ $(HTML32DTD): $(BUILD_TOOLS_JDK)
 	$(call LogInfo, Generating HTML DTD file)
 	$(MKDIR) -p $(@D)
 	$(RM) $@
+	$(ECHO) Calling $(TOOL_DTDBUILDER) html32dtd
 	($(TOOL_DTDBUILDER) html32 > $@) || exit 1
 
 TARGETS += $(HTML32DTD)
+endif

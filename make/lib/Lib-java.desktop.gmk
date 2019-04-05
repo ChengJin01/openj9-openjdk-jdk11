@@ -23,6 +23,10 @@
 # questions.
 #
 
+# ===========================================================================
+# (c) Copyright IBM Corp. 2019, 2019 All Rights Reserved
+# ===========================================================================
+
 include LibCommon.gmk
 
 # Hook to include the corresponding custom file, if present.
@@ -30,6 +34,9 @@ $(eval $(call IncludeCustomExtension, lib/Lib-java.desktop.gmk))
 
 # Prepare the find cache.
 $(eval $(call FillCacheFind, $(wildcard $(TOPDIR)/src/java.desktop/*/native)))
+
+# Disable these libraries for riscv as they are not offered in the cross-toolchain.
+ifneq ($(OPENJDK_TARGET_CPU)_$(COMPILE_TYPE), riscv64_cross)
 
 ################################################################################
 # Create the AWT/2D libraries
@@ -79,6 +86,8 @@ ifneq ($(OPENJDK_TARGET_OS), aix)
   $(BUILD_LIBJSOUND): $(call FindLib, java.base, java)
 
   TARGETS += $(BUILD_LIBJSOUND)
+
+endif
 
 endif
 

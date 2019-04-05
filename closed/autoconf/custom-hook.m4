@@ -240,6 +240,9 @@ AC_DEFUN([OPENJ9_PLATFORM_EXTRACT_VARS_FROM_CPU],
     aarch64)
       OPENJ9_CPU=aarch64
       ;;
+    riscv64)
+      OPENJ9_CPU=riscv64
+      ;;
     *)
       AC_MSG_ERROR([unsupported OpenJ9 cpu $1])
       ;;
@@ -301,6 +304,11 @@ AC_DEFUN_ONCE([OPENJ9_PLATFORM_SETUP],
     OPENJ9_LIBS_SUBDIR=default
   elif test "x$OPENJ9_CPU" = xaarch64 ; then
     OPENJ9_PLATFORM_CODE=xr64
+    if test "x$COMPILE_TYPE" = xcross ; then
+      OPENJ9_BUILDSPEC="${OPENJ9_BUILDSPEC}_cross"
+    fi
+  elif test "x$OPENJ9_CPU" = xriscv64 ; then
+    OPENJ9_PLATFORM_CODE=rv64
     if test "x$COMPILE_TYPE" = xcross ; then
       OPENJ9_BUILDSPEC="${OPENJ9_BUILDSPEC}_cross"
     fi
