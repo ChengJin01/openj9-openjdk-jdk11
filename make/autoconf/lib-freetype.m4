@@ -23,6 +23,10 @@
 # questions.
 #
 
+# ===========================================================================
+# (c) Copyright IBM Corp. 2019, 2019 All Rights Reserved
+# ===========================================================================
+
 ################################################################################
 # Check if a potential freeype library match is correct and usable
 ################################################################################
@@ -78,6 +82,7 @@ AC_DEFUN([LIB_CHECK_POTENTIAL_FREETYPE],
 ################################################################################
 AC_DEFUN_ONCE([LIB_SETUP_FREETYPE],
 [
+
   AC_ARG_WITH(freetype, [AS_HELP_STRING([--with-freetype],
       [specify whether to use 'system' or 'bundled' freetype. Other values are errors.
        The selected option applies to both build time and run time.
@@ -100,129 +105,131 @@ AC_DEFUN_ONCE([LIB_SETUP_FREETYPE],
   FREETYPE_CFLAGS=
   FREETYPE_LIBS=
 
-  if (test "x$with_freetype_include" = "x"  && test "x$with_freetype_lib" != "x") || \
-     (test "x$with_freetype_include" != "x"  && test "x$with_freetype_lib" = "x"); then
-       AC_MSG_ERROR(['must specify both or neither of --with_freetype_include and --with_freetype_lib])
-  fi
+  if test "x$NEEDS_LIB_FREETYPE" = xfalse; then
+    if (test "x${with_freetype}" != x && test "x${with_freetype}" != xno) || \
+        (test "x${with_freetype_include}" != x && test "x${with_freetype_include}" != xno); then
+      AC_MSG_WARN([[freetype not used, so --with-freetype[-*] is ignored]])
+    fi
+  else
+      if (test "x$with_freetype_include" = "x"  && test "x$with_freetype_lib" != "x") || \
+         (test "x$with_freetype_include" != "x"  && test "x$with_freetype_lib" = "x"); then
+           AC_MSG_ERROR(['must specify both or neither of --with_freetype_include and --with_freetype_lib])
+      fi
 
-  FREETYPE_TO_USE=bundled
-  if (test "x$OPENJDK_TARGET_OS" != "xwindows" && test "x$OPENJDK_TARGET_OS" != "xmacosx"); then
-    FREETYPE_TO_USE=system
-  fi
-  if (test "x$with_freetype" != "x"); then
-    if (test "x$with_freetype" = "xsystem"); then
-      FREETYPE_TO_USE=system
-    elif (test "x$with_freetype" = "xbundled"); then
       FREETYPE_TO_USE=bundled
-      if (test "x$with_freetype_include" != "x"  || test "x$with_freetype_lib" != "x"); then
-        AC_MSG_ERROR(['bundled' cannot be specified with --with_freetype_include and --with_freetype_lib])
+      if (test "x$OPENJDK_TARGET_OS" != "xwindows" && test "x$OPENJDK_TARGET_OS" != "xmacosx"); then
+        FREETYPE_TO_USE=system
       fi
-    else
-       AC_MSG_ERROR(['valid values for --with-freetype are 'system' and 'bundled'])
-    fi
-  fi
-
-  if (test "x$with_freetype_include" != "x"  && test "x$with_freetype_lib" != "x"); then 
-      FREETYPE_TO_USE=system
-  fi
-
-  if (test "x$FREETYPE_TO_USE" = "xsystem") && \
-     (test "x$OPENJDK_TARGET_OS" = "xwindows" || test "x$OPENJDK_TARGET_OS" = "xmacosx"); then
-       AC_MSG_ERROR([Only bundled freetype can be specified on Mac and Windows])
-  fi
-
-  if (test "x$with_freetype_include" != "x"); then
-    POTENTIAL_FREETYPE_INCLUDE_PATH="$with_freetype_include"
-  fi
-  if (test "x$with_freetype_lib" != "x"); then
-    POTENTIAL_FREETYPE_LIB_PATH="$with_freetype_lib"
-  fi
-
-  if (test "x$FREETYPE_TO_USE" = "xsystem"); then
-    if (test "x$POTENTIAL_FREETYPE_INCLUDE_PATH" != "x" && test "x$POTENTIAL_FREETYPE_LIB_PATH" != "x"); then
-      # Okay, we got it. Check that it works.
-      LIB_CHECK_POTENTIAL_FREETYPE($POTENTIAL_FREETYPE_INCLUDE_PATH, $POTENTIAL_FREETYPE_LIB_PATH, [--with-freetype])
-      if (test "x$FOUND_FREETYPE" != "xyes"); then
-        AC_MSG_ERROR([Can not find or use freetype at location given by --with-freetype-lib|include])
+      if (test "x$with_freetype" != "x"); then
+        if (test "x$with_freetype" = "xsystem"); then
+          FREETYPE_TO_USE=system
+        elif (test "x$with_freetype" = "xbundled"); then
+          FREETYPE_TO_USE=bundled
+          if (test "x$with_freetype_include" != "x"  || test "x$with_freetype_lib" != "x"); then
+            AC_MSG_ERROR(['bundled' cannot be specified with --with_freetype_include and --with_freetype_lib])
+          fi
+        else
+           AC_MSG_ERROR(['valid values for --with-freetype are 'system' and 'bundled'])
+        fi
       fi
-    else
-      # User did not specify a location, but asked for system freetype. Try to locate it.
 
-      # If we have a sysroot, assume that's where we are supposed to look and skip pkg-config.
-      if (test "x$SYSROOT" = "x"); then
-        if (test "x$FOUND_FREETYPE" != "xyes"); then
-          # Check modules using pkg-config, but only if we have it (ugly output results otherwise)
-          if (test "x$PKG_CONFIG" != "x"); then
-            PKG_CHECK_MODULES(FREETYPE, freetype2, [FOUND_FREETYPE=yes], [FOUND_FREETYPE=no])
-            if (test "x$FOUND_FREETYPE" = "xyes"); then
-              # On solaris, pkg_check adds -lz to freetype libs, which isn't necessary for us.
-              FREETYPE_LIBS=`$ECHO $FREETYPE_LIBS | $SED 's/-lz//g'`
-              # 64-bit libs for Solaris x86 are installed in the amd64 subdirectory, change lib to lib/amd64
-              if (test "x$OPENJDK_TARGET_OS" = "xsolaris" && test "x$OPENJDK_TARGET_CPU" = "xx86_64"); then
-                FREETYPE_LIBS=`$ECHO $FREETYPE_LIBS | $SED 's?/lib?/lib/amd64?g'`
+      if (test "x$with_freetype_include" != "x"  && test "x$with_freetype_lib" != "x"); then 
+          FREETYPE_TO_USE=system
+      fi
+
+      if (test "x$FREETYPE_TO_USE" = "xsystem") && \
+         (test "x$OPENJDK_TARGET_OS" = "xwindows" || test "x$OPENJDK_TARGET_OS" = "xmacosx"); then
+           AC_MSG_ERROR([Only bundled freetype can be specified on Mac and Windows])
+      fi
+
+      if (test "x$with_freetype_include" != "x"); then
+        POTENTIAL_FREETYPE_INCLUDE_PATH="$with_freetype_include"
+      fi
+      if (test "x$with_freetype_lib" != "x"); then
+        POTENTIAL_FREETYPE_LIB_PATH="$with_freetype_lib"
+      fi
+
+      if (test "x$FREETYPE_TO_USE" = "xsystem"); then
+        if (test "x$POTENTIAL_FREETYPE_INCLUDE_PATH" != "x" && test "x$POTENTIAL_FREETYPE_LIB_PATH" != "x"); then
+          # Okay, we got it. Check that it works.
+          LIB_CHECK_POTENTIAL_FREETYPE($POTENTIAL_FREETYPE_INCLUDE_PATH, $POTENTIAL_FREETYPE_LIB_PATH, [--with-freetype])
+          if (test "x$FOUND_FREETYPE" != "xyes"); then
+            AC_MSG_ERROR([Can not find or use freetype at location given by --with-freetype-lib|include])
+          fi
+        else
+          # User did not specify a location, but asked for system freetype. Try to locate it.
+          # If we have a sysroot, assume that's where we are supposed to look and skip pkg-config.
+          if (test "x$SYSROOT" = "x"); then
+            if (test "x$FOUND_FREETYPE" != "xyes"); then
+              # Check modules using pkg-config, but only if we have it (ugly output results otherwise)
+              if (test "x$PKG_CONFIG" != "x"); then
+                PKG_CHECK_MODULES(FREETYPE, freetype2, [FOUND_FREETYPE=yes], [FOUND_FREETYPE=no])
+                if (test "x$FOUND_FREETYPE" = "xyes"); then
+                  # On solaris, pkg_check adds -lz to freetype libs, which isn't necessary for us.
+                  FREETYPE_LIBS=`$ECHO $FREETYPE_LIBS | $SED 's/-lz//g'`
+                  # 64-bit libs for Solaris x86 are installed in the amd64 subdirectory, change lib to lib/amd64
+                  if (test "x$OPENJDK_TARGET_OS" = "xsolaris" && test "x$OPENJDK_TARGET_CPU" = "xx86_64"); then
+                    FREETYPE_LIBS=`$ECHO $FREETYPE_LIBS | $SED 's?/lib?/lib/amd64?g'`
+                  fi
+                  AC_MSG_CHECKING([for freetype])
+                  AC_MSG_RESULT([yes (using pkg-config)])
+                fi
               fi
-              AC_MSG_CHECKING([for freetype])
-              AC_MSG_RESULT([yes (using pkg-config)])
             fi
           fi
-        fi
-      fi
+          if (test "x$FOUND_FREETYPE" != "xyes"); then
+            # Check in well-known locations
+            FREETYPE_BASE_DIR="$SYSROOT/usr"
+            LIB_CHECK_POTENTIAL_FREETYPE([$FREETYPE_BASE_DIR/include], [$FREETYPE_BASE_DIR/lib], [well-known location])
 
-      if (test "x$FOUND_FREETYPE" != "xyes"); then
-        # Check in well-known locations
-        FREETYPE_BASE_DIR="$SYSROOT/usr"
-        LIB_CHECK_POTENTIAL_FREETYPE([$FREETYPE_BASE_DIR/include], [$FREETYPE_BASE_DIR/lib], [well-known location])
-
-        if (test "x$FOUND_FREETYPE" != "xyes"); then
-          FREETYPE_BASE_DIR="$SYSROOT/usr/X11"
-          LIB_CHECK_POTENTIAL_FREETYPE([$FREETYPE_BASE_DIR/include], [$FREETYPE_BASE_DIR/lib], [well-known location])
-        fi
-        if (test "x$FOUND_FREETYPE" != "xyes"); then
-          FREETYPE_BASE_DIR="$SYSROOT/usr/local"
-          LIB_CHECK_POTENTIAL_FREETYPE([$FREETYPE_BASE_DIR/include], [$FREETYPE_BASE_DIR/lib], [well-known location])
-        fi
-
-        if (test "x$FOUND_FREETYPE" != "xyes"); then
-          FREETYPE_BASE_DIR="$SYSROOT/usr"
-          if (test "x$OPENJDK_TARGET_CPU_BITS" = "x64"); then
-            LIB_CHECK_POTENTIAL_FREETYPE([$FREETYPE_BASE_DIR/include], [$FREETYPE_BASE_DIR/lib/$OPENJDK_TARGET_CPU-linux-gnu], [well-known location])
             if (test "x$FOUND_FREETYPE" != "xyes"); then
-              LIB_CHECK_POTENTIAL_FREETYPE([$FREETYPE_BASE_DIR/include], [$FREETYPE_BASE_DIR/lib64], [well-known location])
+              FREETYPE_BASE_DIR="$SYSROOT/usr/X11"
+              LIB_CHECK_POTENTIAL_FREETYPE([$FREETYPE_BASE_DIR/include], [$FREETYPE_BASE_DIR/lib], [well-known location])
             fi
+            if (test "x$FOUND_FREETYPE" != "xyes"); then
+              FREETYPE_BASE_DIR="$SYSROOT/usr/local"
+              LIB_CHECK_POTENTIAL_FREETYPE([$FREETYPE_BASE_DIR/include], [$FREETYPE_BASE_DIR/lib], [well-known location])
+            fi
+
+            if (test "x$FOUND_FREETYPE" != "xyes"); then
+              FREETYPE_BASE_DIR="$SYSROOT/usr"
+              if (test "x$OPENJDK_TARGET_CPU_BITS" = "x64"); then
+                LIB_CHECK_POTENTIAL_FREETYPE([$FREETYPE_BASE_DIR/include], [$FREETYPE_BASE_DIR/lib/$OPENJDK_TARGET_CPU-linux-gnu], [well-known location])
+                if (test "x$FOUND_FREETYPE" != "xyes"); then
+                  LIB_CHECK_POTENTIAL_FREETYPE([$FREETYPE_BASE_DIR/include], [$FREETYPE_BASE_DIR/lib64], [well-known location])
+                fi
+              else
+                LIB_CHECK_POTENTIAL_FREETYPE([$FREETYPE_BASE_DIR/include], [$FREETYPE_BASE_DIR/lib/i386-linux-gnu], [well-known location])
+                if (test "x$FOUND_FREETYPE" != "xyes"); then
+                  LIB_CHECK_POTENTIAL_FREETYPE([$FREETYPE_BASE_DIR/include], [$FREETYPE_BASE_DIR/lib32], [well-known location])
+                fi
+              fi
+            fi
+          fi # end check in well-known locations
+
+          if (test "x$FOUND_FREETYPE" != "xyes"); then
+            HELP_MSG_MISSING_DEPENDENCY([freetype])
+            AC_MSG_ERROR([Could not find freetype! $HELP_MSG ])
+          fi
+        fi # end user specified settings
+
+        # Set FREETYPE_CFLAGS, _LIBS and _LIB_PATH from include and lib dir.
+        if (test "x$FREETYPE_CFLAGS" = "x"); then
+          if (test -d $FREETYPE_INCLUDE_PATH/freetype2/freetype); then
+            FREETYPE_CFLAGS="-I$FREETYPE_INCLUDE_PATH/freetype2 -I$FREETYPE_INCLUDE_PATH"
           else
-            LIB_CHECK_POTENTIAL_FREETYPE([$FREETYPE_BASE_DIR/include], [$FREETYPE_BASE_DIR/lib/i386-linux-gnu], [well-known location])
-            if (test "x$FOUND_FREETYPE" != "xyes"); then
-              LIB_CHECK_POTENTIAL_FREETYPE([$FREETYPE_BASE_DIR/include], [$FREETYPE_BASE_DIR/lib32], [well-known location])
-            fi
+            FREETYPE_CFLAGS="-I$FREETYPE_INCLUDE_PATH"
           fi
         fi
-      fi # end check in well-known locations
 
-      if (test "x$FOUND_FREETYPE" != "xyes"); then
-        HELP_MSG_MISSING_DEPENDENCY([freetype])
-        AC_MSG_ERROR([Could not find freetype! $HELP_MSG ])
+        if (test "x$FREETYPE_LIBS" = "x"); then
+          FREETYPE_LIBS="-L$FREETYPE_LIB_PATH -l$FREETYPE_BASE_NAME"
+        fi
       fi
-    fi # end user specified settings
 
-    # Set FREETYPE_CFLAGS, _LIBS and _LIB_PATH from include and lib dir.
-    if (test "x$FREETYPE_CFLAGS" = "x"); then
-      if (test -d $FREETYPE_INCLUDE_PATH/freetype2/freetype); then
-        FREETYPE_CFLAGS="-I$FREETYPE_INCLUDE_PATH/freetype2 -I$FREETYPE_INCLUDE_PATH"
-      else
-        FREETYPE_CFLAGS="-I$FREETYPE_INCLUDE_PATH"
-      fi
-    fi
-
-    if (test "x$FREETYPE_LIBS" = "x"); then
-      FREETYPE_LIBS="-L$FREETYPE_LIB_PATH -l$FREETYPE_BASE_NAME"
-    fi
+      AC_MSG_RESULT([Using freetype: $FREETYPE_TO_USE])
+      AC_SUBST(FREETYPE_TO_USE)
+      AC_SUBST(FREETYPE_CFLAGS)
+      AC_SUBST(FREETYPE_LIBS)
   fi
-
-
-    AC_MSG_RESULT([Using freetype: $FREETYPE_TO_USE])
-
-
-  AC_SUBST(FREETYPE_TO_USE)
-  AC_SUBST(FREETYPE_CFLAGS)
-  AC_SUBST(FREETYPE_LIBS)
 ])

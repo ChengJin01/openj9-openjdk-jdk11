@@ -22,6 +22,11 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
+/*
+ * ===========================================================================
+ * (c) Copyright IBM Corp. 2019, 2019 All Rights Reserved
+ * ===========================================================================
+ */
 
 /* platform-dependent definitions */
 
@@ -29,8 +34,10 @@
 #define _AWT_RECT_H
 
 #ifndef MACOSX
+#ifndef RISCV64_CROSS
 #include <X11/Xlib.h>
 typedef XRectangle RECT_T;
+#endif /* !RISCV64_CROSS */
 #else
 // OSX still needs this for BitmapToYXBandedRectangles
 typedef struct {
@@ -57,8 +64,10 @@ typedef struct {
 extern "C" {
 #endif
 
+#ifndef RISCV64_CROSS
 int BitmapToYXBandedRectangles(int bitsPerPixel, int width, int height,
         unsigned char * buf, RECT_T * outBuf);
+#endif /* !RISCV64_CROSS */
 
 #if defined(__cplusplus)
 }

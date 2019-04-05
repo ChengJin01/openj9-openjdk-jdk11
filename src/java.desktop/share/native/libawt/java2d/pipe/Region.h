@@ -22,6 +22,11 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
+/*
+ * ===========================================================================
+ * (c) Copyright IBM Corp. 2019, 2019 All Rights Reserved
+ * ===========================================================================
+ */
 
 #ifndef _Included_Region
 #define _Included_Region
@@ -198,7 +203,7 @@ Region_NextIteration(RegionData *pRgnInfo, SurfaceDataBounds *pSpan);
 JNIEXPORT void JNICALL
 Region_EndIteration(JNIEnv *env, RegionData *pRgnInfo);
 
-
+#ifndef RISCV64_CROSS
 /*
  * Converts a sun.java2d.pipe.Region object to a list of
  * rectangles using platform specific native data representation
@@ -210,6 +215,7 @@ RegionToYXBandedRectangles(JNIEnv *env,
         jint x1, jint y1, jint x2, jint y2, jobject region,
         RECT_T ** pRect, unsigned int initialBufferSize);
 
+#endif /* !RISCV64_CROSS */
 
 #ifdef __cplusplus
 };

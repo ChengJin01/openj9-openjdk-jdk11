@@ -449,7 +449,7 @@ ifeq ($(findstring $(OPENJDK_TARGET_OS), windows macosx),)
       $(TOPDIR)/src/$(MODULE)/$(OPENJDK_TARGET_OS_TYPE)/native/common/awt \
       #
 
-  LIBAWT_HEADLESS_EXCLUDES := medialib
+  LIBAWT_HEADLESS_EXCLUDES += medialib
 
   LIBAWT_HEADLESS_EXTRA_HEADER_DIRS := \
       $(LIBAWT_DEFAULT_HEADER_DIRS) \
@@ -465,6 +465,7 @@ ifeq ($(findstring $(OPENJDK_TARGET_OS), windows macosx),)
       NAME := awt_headless, \
       EXTRA_SRC := $(LIBAWT_HEADLESS_EXTRA_SRC), \
       EXCLUDES := $(LIBAWT_HEADLESS_EXCLUDES), \
+      EXCLUDE_FILES := $(LIBAWT_HEADLESS_EXFILES), \
       OPTIMIZATION := LOW, \
       CFLAGS := $(CFLAGS_JDKLIB) \
           $(LIBAWT_HEADLESS_CFLAGS), \
