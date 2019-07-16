@@ -22,7 +22,11 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-
+/*
+ * ===========================================================================
+ * (c) Copyright IBM Corp. 2019, 2019 All Rights Reserved
+ * ===========================================================================
+ */
 package java.awt;
 
 import java.awt.datatransfer.Clipboard;
@@ -1421,10 +1425,17 @@ public abstract class Toolkit {
             }
         });
 
-        // ensure that the proper libraries are loaded
-        loadLibraries();
-        initAssistiveTechnologies();
-        initIDs();
+        /* Given that initIDs() is empty on Linux/Unix-based OS and is only used on Windows and MacOS,
+         * it should be fine to skip invoking initIDs() on on Linux/Unix-based OS.
+         */
+        private static String osName = System.getProperty("os.name").toLowerCase();
+        if (osName.contains("win") || osName.contains("mac")) {
+            loadLibraries();
+            initAssistiveTechnologies();
+            initIDs();
+        } else {
+            initAssistiveTechnologies();
+        }
     }
 
     /**
