@@ -559,6 +559,22 @@ AC_DEFUN([CONFIGURE_OPENSSL],
                 OPENSSL_BUNDLE_LIB_PATH="${OPENSSL_DIR}/lib"
               fi
             fi
+          elif test -s "$OPENSSL_DIR/lib64/${LIBRARY_PREFIX}crypto${SHARED_LIBRARY_SUFFIX}" ; then
+            OPENSSL_CFLAGS="-I${OPENSSL_DIR}/include"
+            if test "x$BUNDLE_OPENSSL" = xyes ; then
+              # On Mac OSX, create local copy of the crypto library to update @rpath
+              # as the default is /usr/local/lib.
+              if test "x$OPENJDK_BUILD_OS" = xmacosx ; then
+                LOCAL_CRYPTO="$TOPDIR/openssl"
+                $MKDIR -p "${LOCAL_CRYPTO}"
+                $CP "${OPENSSL_DIR}/libcrypto.1.1.dylib" "${LOCAL_CRYPTO}"
+                $CP "${OPENSSL_DIR}/libcrypto.1.0.0.dylib" "${LOCAL_CRYPTO}"
+                $CP -a "${OPENSSL_DIR}/libcrypto.dylib" "${LOCAL_CRYPTO}"
+                OPENSSL_BUNDLE_LIB_PATH="${LOCAL_CRYPTO}"
+              else
+                OPENSSL_BUNDLE_LIB_PATH="${OPENSSL_DIR}/lib64"
+              fi
+            fi
           elif test -s "$OPENSSL_DIR/${LIBRARY_PREFIX}crypto${SHARED_LIBRARY_SUFFIX}" ; then
             OPENSSL_CFLAGS="-I${OPENSSL_DIR}/include"
             if test "x$BUNDLE_OPENSSL" = xyes ; then

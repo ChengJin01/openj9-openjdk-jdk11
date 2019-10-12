@@ -22,9 +22,6 @@
 # or visit www.oracle.com if you need additional information or have any
 # questions.
 #
-# ===========================================================================
-# (c) Copyright IBM Corp. 2019, 2019 All Rights Reserved
-# ===========================================================================
 
 include LibCommon.gmk
 
@@ -144,5 +141,3 @@ ifeq ($(OPENJDK_TARGET_OS), macosx)
 
 endif
 
-# Hook to include the corresponding custom file, if present.
-$(eval $(call IncludeCustomExtension, lib/Lib-java.desktop-post.gmk))

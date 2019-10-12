@@ -22,11 +22,6 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-/*
- * ===========================================================================
- * (c) Copyright IBM Corp. 2019, 2019 All Rights Reserved
- * ===========================================================================
- */
 
 #include <stdlib.h>
 
@@ -227,7 +222,6 @@ Region_EndIteration(JNIEnv *env, RegionData *pRgnInfo)
     }
 }
 
-#ifndef RISCV64_CROSS
 /*
  * The code was extracted from
  * src/solaris/native/sun/java2d/x11/X11SurfaceData.c
@@ -288,5 +282,3 @@ RegionToYXBandedRectangles(JNIEnv *env,
 
     return numrects;
 }
-
-#endif /* !RISCV64_CROSS */

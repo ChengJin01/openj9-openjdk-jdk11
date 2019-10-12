@@ -23,10 +23,6 @@
 # questions.
 #
 
-# ===========================================================================
-# (c) Copyright IBM Corp. 2019, 2019 All Rights Reserved
-# ===========================================================================
-
 # Major library component reside in separate files.
 m4_include([lib-alsa.m4])
 m4_include([lib-bundled.m4])
@@ -44,8 +40,7 @@ m4_include([lib-tests.m4])
 AC_DEFUN_ONCE([LIB_DETERMINE_DEPENDENCIES],
 [
   # Check if X11 is needed
-  if test "x$OPENJDK_TARGET_OS" = xwindows \
-      || test "x$OPENJDK_TARGET_OS" = xmacosx; then
+  if test "x$OPENJDK_TARGET_OS" = xwindows || test "x$OPENJDK_TARGET_OS" = xmacosx; then
     # No X11 support on windows or macosx
     NEEDS_LIB_X11=false
   else
@@ -55,8 +50,7 @@ AC_DEFUN_ONCE([LIB_DETERMINE_DEPENDENCIES],
   fi
 
   # Check if fontconfig is needed
-  if test "x$OPENJDK_TARGET_OS" = xwindows \
-  || test "x$OPENJDK_TARGET_OS" = xmacosx; then
+  if test "x$OPENJDK_TARGET_OS" = xwindows || test "x$OPENJDK_TARGET_OS" = xmacosx; then
     # No fontconfig support on windows or macosx
     NEEDS_LIB_FONTCONFIG=false
   else
@@ -66,8 +60,7 @@ AC_DEFUN_ONCE([LIB_DETERMINE_DEPENDENCIES],
   fi
 
   # Check if cups is needed
-  if test "x$OPENJDK_TARGET_OS" = xwindows \
-  || test "x$OPENJDK_TARGET_CPU" = xriscv64; then
+  if test "x$OPENJDK_TARGET_OS" = xwindows; then
     # Windows have a separate print system
     NEEDS_LIB_CUPS=false
   else
@@ -91,16 +84,6 @@ AC_DEFUN_ONCE([LIB_DETERMINE_DEPENDENCIES],
     NEEDS_LIB_FFI=true
   else
     NEEDS_LIB_FFI=false
-  fi
-
-  # these libraries (not offered in the cross compilation toolchain)
-  # might be installed on the RISC-V-based platform.
-  if test "x$OPENJDK_TARGET_CPU" = xriscv64 && test "x$COMPILE_TYPE" = xcross; then
-    NEEDS_LIB_X11=false
-    NEEDS_LIB_CUPS=false
-    NEEDS_LIB_FONTCONFIG=false
-    NEEDS_LIB_FREETYPE=false
-    NEEDS_LIB_ALSA=false
   fi
 ])
 

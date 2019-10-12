@@ -22,13 +22,6 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-/*
- * ===========================================================================
- * (c) Copyright IBM Corp. 2019, 2019 All Rights Reserved
- * ===========================================================================
- */
-
-#ifndef RISCV64_CROSS
 
 #include "utility/rect.h"
 
@@ -107,5 +100,3 @@ int BitmapToYXBandedRectangles(int bitsPerPixel, int width, int height, unsigned
 #if defined(__cplusplus)
 }
 #endif
-
-#endif /* !RISCV64_CROSS */
