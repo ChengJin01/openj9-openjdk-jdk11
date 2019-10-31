@@ -268,6 +268,9 @@ AC_DEFUN([OPENJ9_PLATFORM_EXTRACT_VARS_FROM_CPU],
     riscv64)
       OPENJ9_CPU=riscv64
       ;;
+    riscv64)
+      OPENJ9_CPU=riscv64
+      ;;
     *)
       AC_MSG_ERROR([unsupported OpenJ9 cpu $1])
       ;;

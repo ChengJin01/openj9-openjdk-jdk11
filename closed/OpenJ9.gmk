@@ -218,6 +218,10 @@ ifneq (riscv64, $(OPENJDK_TARGET_CPU))
   $(call openj9_add_jdk_shlibs, java.base, j9jit29)
 endif
 
+ifneq (riscv64, $(OPENJDK_TARGET_CPU))
+  $(call openj9_add_jdk_shlibs, java.base, j9jit29)
+endif
+
 ifeq (windows,$(OPENJDK_TARGET_OS))
   $(call openj9_add_jdk_lib, java.base, lib/$(call STATIC_LIBRARY,jsig))
   $(eval $(call openj9_add_jdk_rules, \
