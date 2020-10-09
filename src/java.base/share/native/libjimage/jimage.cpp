@@ -59,7 +59,9 @@ extern "C" JNIEXPORT JImageFile*
 JIMAGE_Open(const char *name, jint* error) {
     // TODO - return a meaningful error code
     *error = 0;
+    printf("\nJIMAGE_Open: name = %s\n", name);
     ImageFileReader* jfile = ImageFileReader::open(name);
+    printf("\nJIMAGE_Open: ImageFileReader::open: jfile = %p\n",  jfile);
     return (JImageFile*) jfile;
 }
 

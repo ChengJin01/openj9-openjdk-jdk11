@@ -284,6 +284,7 @@ ImageFileReader* ImageFileReader::find_image(const char* name) {
 // Open an image file, reuse structure if file already open.
 ImageFileReader* ImageFileReader::open(const char* name, bool big_endian) {
     ImageFileReader* reader = find_image(name);
+    printf("\nImageFileReader::open(): find_image: name = %s, reader = %p", name, reader);
     if (reader != NULL) {
         return reader;
     }
@@ -292,6 +293,7 @@ ImageFileReader* ImageFileReader::open(const char* name, bool big_endian) {
     reader = new ImageFileReader(name, big_endian);
     if (reader == NULL || !reader->open()) {
         // Failed to open.
+    	printf("\nImageFileReader::open(): reader->open(): Failed to open: return NULL");
         delete reader;
         return NULL;
     }
